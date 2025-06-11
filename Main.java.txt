@@ -1,0 +1,123 @@
+import java.util.Scanner;
+
+public class Main {
+    static String[][] board = {
+            {" ", " ", " "},
+            {" ", " ", " "},
+            {" ", " ", " "}
+    };
+
+    static String player1Name;
+    static String player2Name;
+    static String symbol1 = "X";
+    static String symbol2 = "O";
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Ask player names
+        System.out.print("Enter Player 1 name: ");
+        player1Name = scanner.nextLine();
+        System.out.print("Enter Player 2 name: ");
+        player2Name = scanner.nextLine();
+
+        String currentPlayer = player1Name;
+        String currentSymbol = symbol1;
+
+        int moveCount = 0;
+
+        while (true) {
+            printBoard();
+            System.out.println("----------------------------------");
+            System.out.println("🔹 " + currentPlayer + "'s turn ➤ [" + currentSymbol + "]");
+            System.out.println("----------------------------------");
+
+            int row = -1, col = -1;
+
+            // Input validation for row
+            while (true) {
+                System.out.print("Enter row (0-2): ");
+                if (scanner.hasNextInt()) {
+                    row = scanner.nextInt();
+                    if (row >= 0 && row <= 2) break;
+                    else System.out.println("⚠️ Please enter a number between 0 and 2.");
+                } else {
+                    System.out.println("⚠️ Invalid input! Please enter a number.");
+                    scanner.next(); // discard invalid input
+                }
+            }
+
+            // Input validation for column
+            while (true) {
+                System.out.print("Enter column (0-2): ");
+                if (scanner.hasNextInt()) {
+                    col = scanner.nextInt();
+                    if (col >= 0 && col <= 2) break;
+                    else System.out.println("⚠️ Please enter a number between 0 and 2.");
+                } else {
+                    System.out.println("⚠️ Invalid input! Please enter a number.");
+                    scanner.next(); // discard invalid input
+                }
+            }
+
+            if (isValidMove(row, col)) {
+                board[row][col] = currentSymbol;
+                moveCount++;
+
+                if (checkWinner(currentSymbol)) {
+                    printBoard();
+                    System.out.println("🎉 Congratulations, " + currentPlayer + " wins!");
+                    break;
+                } else if (moveCount == 9) {
+                    printBoard();
+                    System.out.println("It's a draw! 🤝");
+                    break;
+                }
+
+                // Switch player
+                if (currentPlayer.equals(player1Name)) {
+                    currentPlayer = player2Name;
+                    currentSymbol = symbol2;
+                } else {
+                    currentPlayer = player1Name;
+                    currentSymbol = symbol1;
+                }
+
+            } else {
+                System.out.println("⚠️ That spot is already taken! Try another.");
+            }
+        }
+
+        scanner.close();
+    }
+
+    // Print the game board
+    public static void printBoard() {
+        System.out.println("+---+---+---+");
+        for (int i = 0; i < 3; i++) {
+            System.out.print("| ");
+            for (int j = 0; j < 3; j++) {
+                System.out.print(board[i][j] + " | ");
+            }
+            System.out.println();
+            System.out.println("+---+---+---+");
+        }
+    }
+
+    // Check if the move is valid
+    public static boolean isValidMove(int row, int col) {
+        return board[row][col].equals(" ");
+    }
+
+    // Check for a winner
+    public static boolean checkWinner(String symbol) {
+        for (int i = 0; i < 3; i++) {
+            if ((board[i][0].equals(symbol) && board[i][1].equals(symbol) && board[i][2].equals(symbol)) ||
+                    (board[0][i].equals(symbol) && board[1][i].equals(symbol) && board[2][i].equals(symbol))) {
+                return true;
+            }
+        }
+        return (board[0][0].equals(symbol) && board[1][1].equals(symbol) && board[2][2].equals(symbol)) ||
+                (board[0][2].equals(symbol) && board[1][1].equals(symbol) && board[2][0].equals(symbol));
+    }
+}
